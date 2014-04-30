@@ -1,0 +1,13 @@
+{
+  "name": "tracking-app",
+  "author": "Marcos Castany",
+  "description": "Tracking application",
+  "version": "0.0.1",
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  },
+  "dependencies": {
+    "express": "^4.1.1"
+  }
+}
