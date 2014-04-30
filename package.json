@@ -8,6 +8,10 @@
     "npm": "1.1.x"
   },
   "dependencies": {
-    "express": "^4.1.1"
+    "express": "^4.1.1",
+    "body-parser": "^1.0.2",
+    "method-override": "^1.0.0",
+    "static-favicon": "^1.0.2",
+    "errorhandler": "^1.0.1"
   }
 }
