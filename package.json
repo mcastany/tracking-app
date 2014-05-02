@@ -6,17 +6,7 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "express": "^4.1.1",
-    "body-parser": "^1.0.2",
-    "method-override": "^1.0.0",
-    "static-favicon": "^1.0.2",
-    "errorhandler": "^1.0.1"
-  },
-  "devDependencies": {
-    "express": "^4.1.1",
-    "body-parser": "^1.0.2",
-    "method-override": "^1.0.0",
-    "static-favicon": "^1.0.2",
-    "errorhandler": "^1.0.1"
+    "express" : "3.4.7",
+    "mongodb": "^1.4.2"
   }
 }
