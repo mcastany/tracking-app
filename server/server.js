@@ -12,113 +12,51 @@ var App = function(){
   self.db = new mongodb.Db("appharbor_e6a2bd7e-24ec-441f-a7cf-574cf646c8e8", self.dbServer, {auto_reconnect: true});
   self.dbUser = "appharbor_e6a2bd7e-24ec-441f-a7cf-574cf646c8e8";
   self.dbPass = "a1cmfsf7qdk52se1413rjla6s0";
-
   self.collectionName = "locations";
-  
-  //self.ipaddr  = process.env.OPENSHIFT_NODEJS_IP;
-  self.port    = parseInt(process.env.PORT) || 8080;
+  self.port = parseInt(process.env.PORT) || 8080;
 
-  // Web app logic
   self.routes = {};
   self.routes['health'] = function(req, res){ res.send('1'); };
-  
-  /*
-  //returns all the parks in the collection
-  self.routes['returnAllParks'] = function(req, res){
-    self.db.collection(selft.collectionName).find().toArray(function(err, names) {
-        res.header("Content-Type:","application/json");
-        res.end(JSON.stringify(names));
-    });
-  };
-
-  //find a single park by passing in the objectID to the URL
-  self.routes['returnAPark'] = function(req, res){
-      var BSON = mongodb.BSONPure;
-      var parkObjectID = new BSON.ObjectID(req.params.id);
-      self.db.collection(selft.collectionName).find({'_id':parkObjectID}).toArray(function(err, names){
-              res.header("Content-Type:","application/json");
-              res.end(JSON.stringify(names));
-      });
-  };
-
-  //find parks near a certain lat and lon passed in as query parameters (near?lat=45.5&lon=-82)
-  self.routes['returnParkNear'] = function(req, res){
-      //in production you would do some sanity checks on these values before parsing and handle the error if they don't parse
-      var lat = parseFloat(req.query.lat);
-      var lon = parseFloat(req.query.lon);
-
-      self.db.collection(selft.collectionName).find( {"pos" : {$near: [lon,lat]}}).toArray(function(err,names){
-          res.header("Content-Type:","application/json");
-          res.end(JSON.stringify(names));
-       });
-  };
-
-  self.routes['returnParkNameNear'] = function(req, res){
-      var lat = parseFloat(req.query.lat);
-      var lon = parseFloat(req.query.lon);
-      var name = req.params.name;
-      self.db.collection(selft.collectionName).find( {"Name" : {$regex : name, $options : 'i'}, "pos" : { $near : [lon,lat]}}).toArray(function(err,names){
-          res.header("Content-Type:","application/json");
-          res.end(JSON.stringify(names));
-      });
-  };
-
-  self.routes['postAPark'] = function(req, res){
-
-     var name = req.body.name;
-     var lat = req.body.lat;
-     var lon = req.body.lon;
-     console.log(req.body);
-
-     self.db.collection(selft.collectionName).insert({'Name' : name, 'pos' : [lon,lat ]}), function(result){
-         //we should have caught errors here for a real app
-         res.end('success');
-     };
-  };
-  */
-  
   self.routes['returnLocations'] = function(req, res){
     self.db.collection(self.collectionName).find().toArray(function(err, names) {
         res.header("Content-Type:","application/json");
         res.end(JSON.stringify(names));
     });
   };
-
   self.routes['createLocation'] = function(req, res){
-	 var name = req.body.name;
-	 var date = req.body.date;
-     var lat = req.body.lat;
-     var lon = req.body.lon;
+	var name = req.body.name;
+	var date = req.body.date;
+	var time = req.body.time;
+    var lat = req.body.lat;
+    var lon = req.body.lon;
      
-	 console.log(req.body);
-	 
-	 var element = {
+	var element = {
 		'user' : name, 
 		'date': date,
+		'time': time,
 		'pos' : [lon,lat ]
 		};
-
-     self.db.collection(self.collectionName).insert(element), function(result){
-		   res.end('success');
-     };
-  
-  
-  }
-  
+		
+	console.log('%s: Node Creating element: lat: %s long:%s ...', Date(Date.now()), lat, lon);
+    self.db.collection(self.collectionName).insert(element), function(result){
+		res.header("Content-Type:","application/json");
+		res.end({status : 'success'});
+    };
+  };
   self.routes['returnLocationsByUser'] = function(req, res){
 	var user = req.params.user;
   
-	console.log("Searching for user: " + user);
-  
+    console.log("Searching user: " + user);
 	self.db.collection(self.collectionName).find({"user" : user}).toArray(function(err,names){
 		res.header("Content-Type:","application/json");
 		res.end(JSON.stringify(names));
 	});
   };
-  
   self.routes['returnLocationsByUserByDate'] = function(req, res){
     var user = req.params.user;
 	var date = req.params.date;
+	
+	console.log("Searching user: " + user + " and data: " + date);
 	
 	self.db.collection(self.collectionName).find({"user" : user, "date" : date}).toArray(function(err,names){
 		res.header("Content-Type:","application/json");
@@ -135,19 +73,17 @@ var App = function(){
 
   //This uses the Connect frameworks body parser to parse the body of the post request
   self.app.configure(function () {
-        self.app.use(express.bodyParser());
-        self.app.use(express.methodOverride());
-        self.app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    self.app.use(express.bodyParser());
+    self.app.use(express.methodOverride());
+    self.app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   });
 
   //define all the url mappings
   self.app.get('/health', self.routes['health']);
   self.app.get('/api/locations', self.routes['returnLocations']);
   self.app.post('/api/locations', self.routes['createLocation']);
-  
   self.app.get('/api/locations/:user', self.routes['returnLocationsByUser']);
   self.app.get('/api/locations/:user/:date', self.routes['returnLocationsByUserByDate']);
-  
 
   // Logic to open a database connection. We are going to call this outside of app so it is available to all our functions inside.
   self.connectDb = function(callback){
@@ -157,6 +93,8 @@ var App = function(){
 	  console.log('Database connected');
       self.db.authenticate(self.dbUser, self.dbPass, function(err, res){
         if(err){ console.log("Marcos"); throw err };
+		
+		console.log('Authentication succeed!!');
         callback();
       });
     });
@@ -165,7 +103,7 @@ var App = function(){
   //starting the nodejs server with express
   self.startServer = function(){
     self.app.listen(self.port, self.ipaddr, function(){
-      console.log('%s: Node server started on %s:%d ...', Date(Date.now()), self.ipaddr, self.port);
+      console.log('%s: Node server started on %s:%d ...', Date(Date.now()), self.ipaddr || "localhost", self.port);
     });
   }
 
