@@ -34,7 +34,7 @@ var App = function(){
 		'user' : name, 
 		'date': date,
 		'time': time,
-		'pos' : [lon,lat ]
+		'pos' : [lat, lon]
 		};
 		
 	console.log('%s: Node Creating element: lat: %s long:%s ...', Date(Date.now()), lat, lon);
