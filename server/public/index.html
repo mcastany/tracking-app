@@ -28,8 +28,8 @@
 					map.setView([data[0].pos[0], data[0].pos[1]], 13);
 					
 					$.each( data, function( key, val ) {
-						var information = "<b>Date: {0}</b><br />Time: {1}".replace("{0}", data.date).replace("{1}", data.time);
-						L.marker([val.pos[0], val.pos[1]]).addTo(map).bindPopup().openPopup(information);
+						var information = "<b>Date: {0}</b><br />Time: {1}".replace("{0}", val.date).replace("{1}", val.time);
+						L.marker([val.pos[0], val.pos[1]]).addTo(map).bindPopup(information).openPopup();
 					});
 				}
 			});
