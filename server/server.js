@@ -20,7 +20,7 @@ var App = function(){
   self.routes['returnLocations'] = function(req, res){
     self.db.collection(self.collectionName).find().toArray(function(err, names) {
         res.header("Content-Type:","application/json");
-        res.end(JSON.stringify(names));
+        res.send(JSON.stringify(names));
     });
   };
   self.routes['createLocation'] = function(req, res){
@@ -38,10 +38,10 @@ var App = function(){
 		};
 		
 	console.log('%s: Node Creating element: lat: %s long:%s ...', Date(Date.now()), lat, lon);
-    self.db.collection(self.collectionName).insert(element), function(result){
+    self.db.collection(self.collectionName).insert(element, function(result){
 		res.header("Content-Type:","application/json");
-		res.end({status : 'success'});
-    };
+		res.send(200,{status : 'success'});
+    });
   };
   self.routes['returnLocationsByUser'] = function(req, res){
 	var user = req.params.user;
@@ -49,7 +49,7 @@ var App = function(){
     console.log("Searching user: " + user);
 	self.db.collection(self.collectionName).find({"user" : user}).toArray(function(err,names){
 		res.header("Content-Type:","application/json");
-		res.end(JSON.stringify(names));
+		res.send(200, JSON.stringify(names));
 	});
   };
   self.routes['returnLocationsByUserByDate'] = function(req, res){
@@ -60,7 +60,7 @@ var App = function(){
 	
 	self.db.collection(self.collectionName).find({"user" : user, "date" : date}).toArray(function(err,names){
 		res.header("Content-Type:","application/json");
-		res.end(JSON.stringify(names));
+		res.send(200, JSON.stringify(names));
 	});
   };
   
